@@ -1,79 +1,81 @@
 package app;
 
-import classes.Ingrediente; // Sua classe Ingrediente
-import classes.Prato;       // Sua classe Prato
+import classes.*; // Importa todas as suas classes de modelo
 
 import javafx.application.Application;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List; // Usado para a lista de pratos do menu
+import java.util.List;
 
 public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        List<Prato> pratosParaMenu = carregarPratosConformeSuaClasse();
+        // 1. Cria uma lista de pedidos (deliveries) já concluídos para simulação.
+        List<Pedido> pedidosConcluidos = carregarPedidosDeExemplo();
 
-        TelaDelivery telaDelivery = new TelaDelivery(primaryStage, pratosParaMenu);
-        telaDelivery.mostrar();
+        // 2. Cria a instância da tela de gerenciamento, passando a lista de pedidos.
+        TelaGerenciarDeliveries telaGerenciar = new TelaGerenciarDeliveries(primaryStage, pedidosConcluidos);
+
+        // 3. Mostra a tela.
+        telaGerenciar.mostrar();
     }
 
-    // Método para carregar/criar os pratos usando o construtor da SUA classe Prato
-    // Prato(float preco, ArrayList<Ingrediente> listaIngredientes, String nome, String descricao, int quantidade)
-    private List<Prato> carregarPratosConformeSuaClasse() {
-        List<Prato> pratosDoMenu = new ArrayList<>();
+    /**
+     * Cria e retorna uma lista de Pedidos para simular deliveries que já foram feitos.
+     * @return Uma lista de objetos Pedido.
+     */
+    private List<Pedido> carregarPedidosDeExemplo() {
+        List<Pedido> pedidos = new ArrayList<>();
 
-        // Ingredientes de exemplo (usando o construtor da sua classe Ingrediente)
-        // Ingrediente(String nome, float preco, int quantidade, String validade)
-        // A 'quantidade' em Ingrediente aqui pode ser interpretada como estoque do ingrediente
-        // ou quantidade necessária para UMA unidade do prato. Para a lista de ingredientes de um prato,
-        // geralmente não se armazena o estoque do ingrediente DENTRO do prato, mas sim a receita.
-        // Vou assumir que a 'quantidade' no construtor de Ingrediente é apenas informativa aqui, ou
-        // que você tem um sistema mais complexo de gerenciamento de ingredientes.
-        Ingrediente tomate = new Ingrediente("Tomate", 0.5f, 100, "2025-12-31");
-        Ingrediente queijo = new Ingrediente("Queijo Mussarela", 2.0f, 50, "2025-11-30");
-        Ingrediente frango = new Ingrediente("Frango Desfiado", 5.0f, 30, "2025-10-10");
-        Ingrediente alface = new Ingrediente("Alface Crespa", 0.8f, 40, "2025-10-05");
-        Ingrediente pao = new Ingrediente("Pão de Forma", 1.0f, 60, "2025-10-08");
-        Ingrediente carne = new Ingrediente("Carne Moída", 4.5f, 40, "2025-10-12");
+        // --- Pratos disponíveis para serem usados nos pedidos ---
+        Prato pratoSalada = new Prato(28.50f, new ArrayList<>(), "Salada Caesar Especial", "...", 20);
+        Prato pratoXBurger = new Prato(32.00f, new ArrayList<>(), "X-Burger Clássico", "...", 30);
+        Prato pratoPizza = new Prato(35.00f, new ArrayList<>(), "Pizza Mussarela Individual", "...", 15);
+        Prato pratoSuco = new Prato(12.00f, new ArrayList<>(), "Suco de Laranja", "...", 50);
 
-        // Lista de ingredientes para Salada (usando sua classe Ingrediente)
-        ArrayList<Ingrediente> ingredientesSalada = new ArrayList<>(Arrays.asList(
-                new Ingrediente("Alface Americana", 1.0f, 1, "saco"), // Quantidade do ingrediente
-                new Ingrediente("Frango Grelhado Tiras", 3.0f, 100, "gramas"),
-                new Ingrediente("Tomate Cereja", 0.5f, 50, "gramas"),
-                new Ingrediente("Molho Caesar", 0.8f, 30, "ml")
-        ));
-        pratosDoMenu.add(new Prato(28.50f, ingredientesSalada, "Salada Caesar Especial",
-                "Salada refrescante com frango, tomate cereja e molho caesar.", 20)); // 20 é o estoque deste Prato
+        // --- Pedido 1 ---
+        // CORREÇÃO: Usando o construtor Cliente(nome, dataAniversario, endereco)
+        Cliente cliente1 = new Cliente("João Silva", "15/05/1985", "Rua das Flores, 123");
+        Pedido pedido1 = new Pedido();
+        pedido1.setConsumidor(cliente1);
+        pedido1.setPratos(new ArrayList<>(Arrays.asList(pratoXBurger, pratoSuco)));
+        pedido1.setQuantidades(new ArrayList<>(Arrays.asList(1, 2))); // 1 X-Burger, 2 Sucos
+        Pagamento pagamento1 = new Pagamento();
+        pagamento1.setPreco(pedido1.calcularPrecoTotal()); // Usa o método da sua classe Pedido
+        pagamento1.setTipo("PIX");
+        pedido1.setPagamento(pagamento1);
+        pedidos.add(pedido1);
 
-        ArrayList<Ingrediente> ingredientesXBurger = new ArrayList<>(Arrays.asList(
-                new Ingrediente("Pão de Hambúrguer", 1.5f, 1, "unidade"),
-                new Ingrediente("Hambúrguer de Carne", 5.0f, 1, "unidade"),
-                new Ingrediente("Queijo Cheddar", 1.0f, 2, "fatias"),
-                new Ingrediente("Alface", 0.3f, 2, "folhas")
-        ));
-        pratosDoMenu.add(new Prato(32.00f, ingredientesXBurger, "X-Burger Clássico",
-                "Delicioso hambúrguer com queijo cheddar e alface.", 30));
+        // --- Pedido 2 ---
+        // CORREÇÃO: Usando o construtor Cliente(nome, dataAniversario, endereco)
+        Cliente cliente2 = new Cliente("Maria Oliveira", "20/11/1992", "Avenida Principal, 456");
+        Pedido pedido2 = new Pedido();
+        pedido2.setConsumidor(cliente2);
+        pedido2.setPratos(new ArrayList<>(Arrays.asList(pratoPizza, pratoSalada, pratoSuco)));
+        pedido2.setQuantidades(new ArrayList<>(Arrays.asList(2, 1, 1))); // 2 Pizzas, 1 Salada, 1 Suco
+        Pagamento pagamento2 = new Pagamento();
+        pagamento2.setPreco(pedido2.calcularPrecoTotal());
+        pagamento2.setTipo("Cartão de Débito");
+        pedido2.setPagamento(pagamento2);
+        pedidos.add(pedido2);
 
-        ArrayList<Ingrediente> ingredientesPizza = new ArrayList<>(Arrays.asList(
-                new Ingrediente("Massa de Pizza", 3.0f, 1, "disco"),
-                new Ingrediente("Molho de Tomate", 1.0f, 100, "ml"),
-                new Ingrediente("Queijo Mussarela", 2.5f, 150, "gramas"),
-                new Ingrediente("Orégano", 0.1f, 5, "gramas")
-        ));
-        pratosDoMenu.add(new Prato(35.00f, ingredientesPizza, "Pizza Mussarela Individual",
-                "Pizza individual com borda recheada de catupiry.", 15));
+        // --- Pedido 3 ---
+        // CORREÇÃO: Usando o construtor Cliente(nome, dataAniversario, endereco)
+        Cliente cliente3 = new Cliente("Carlos Pereira", "08/02/1960", "Travessa dos Sonhos, 789");
+        Pedido pedido3 = new Pedido();
+        pedido3.setConsumidor(cliente3);
+        pedido3.setPratos(new ArrayList<>(Arrays.asList(pratoSalada)));
+        pedido3.setQuantidades(new ArrayList<>(Arrays.asList(1))); // 1 Salada
+        Pagamento pagamento3 = new Pagamento();
+        pagamento3.setPreco(pedido3.calcularPrecoTotal());
+        pagamento3.setTipo("Dinheiro");
+        pedido3.setPagamento(pagamento3);
+        pedidos.add(pedido3);
 
-        // Bebidas (podem ter lista de ingredientes vazia se não aplicável)
-        pratosDoMenu.add(new Prato(12.00f, new ArrayList<>(), "Suco de Laranja Natural 500ml",
-                "Feito com laranjas frescas selecionadas.", 50));
-        pratosDoMenu.add(new Prato(7.00f, new ArrayList<>(), "Refrigerante Lata 350ml",
-                "Escolha entre Coca-Cola, Guaraná, Fanta ou Sprite.", 100));
-
-        return pratosDoMenu;
+        return pedidos;
     }
 
     public static void main(String[] args) {
